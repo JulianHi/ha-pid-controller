@@ -50,6 +50,7 @@ class PIDController:
         self._last_input = None
         self._last_time = None
 
+
     def update(self, feedback_value, in_time=None):
         """Calculates PID value for given reference feedback"""
 
@@ -81,7 +82,24 @@ class PIDController:
         # Calculate delta error
         delta_error = error - last_error
 
+        # Calculate delta input
+        delta_feedback_value = feedback_value - ( self._last_input if self._last_input is not None else 0)
+
         # Calculate P
+        self._p_term = self._kp * error
+
+        # Calculate I
+        i_term_delta = self._ki * error
+        i_term_delta = self.clamp_value(i_term_delta, self._windup)
+        self._i_term += i_term_delta
+        self._i_term = self.clamp_value(self._i_term, (0, 100))
+
+        # Calculate D
+        self._d_term = self._kd * delta_feedback_value
+
+
+
+        """# Calculate P
         self._p_term = self._kp * error
 
         # Calculate I and avoids Sturation
@@ -97,7 +115,7 @@ class PIDController:
         self._i_term = self.clamp_value(self._i_term, (0, 100))
 
         # Calculate D
-        self._d_term = self._kd * delta_error / delta_time
+        self._d_term = self._kd * delta_error / delta_time"""
 
         # Compute final output
         self._output = self._p_term + self._i_term + self._d_term

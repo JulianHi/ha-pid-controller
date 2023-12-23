@@ -794,7 +794,7 @@ class PidController(SensorEntity):
                 self._pid.windup = self.windup
 
             if set_point != self._pid.set_point:
-                self.reset_pid()
+                #self.reset_pid() don't reset if set point changes
                 self._pid.set_point = set_point
 
             if entity == self._source:
